@@ -1,0 +1,22 @@
+#!/bin/python
+
+import subprocess
+import sys
+
+output = subprocess.run(['ip','route'], capture_output=True, 
+						text=True)
+
+if len(output.stdout) == 0:
+	subprocess.run(['notify-send', 'There is no local network'])
+	sys.exit()
+
+ip = output.stdout.split(' ')[2]
+
+adb = subprocess.run(['adb', 'connect', ip+':5555'], 
+					capture_output=True, text=True)
+
+if 'failed' in adb.stdout:
+	subprocess.run(['notify-send', 'Turn on adb on your phone.'])
+
+elif 'connected' in adb.stdout:
+	subprocess.run(['notify-send', 'Connected..'])
